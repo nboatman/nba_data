@@ -1,13 +1,16 @@
 import re
+import sqlite3
+
 import requests
 from lxml import html
+from nba_data import NBAData, nba_database
 
 BASE_URL = 'https://www.basketball-reference.com'
 
 
 class GameLinkRecord:
-    def __init__(self, date, game_id):
-        self.date = date.strftime('%Y%m%d')
+    def __init__(self, date_string, game_id):
+        self.date = date_string
         self.game_id = game_id
         self.url = f"/boxscores/{game_id}.html"
         self.successful_parsing = False
@@ -31,10 +34,13 @@ def get_game_urls(schedule_response, game_date):
 
 def ingest_links(game_date):
     date_string = game_date.strftime('%Y%m%d')
-    boxscore_links = get_game_urls(game_date)
+    schedule_response = get_schedule_response(game_date)
+    boxscore_links = get_game_urls(schedule_response, game_date)
 
     game_id_matches = [re.search(r"^/boxscores/([^.]*).html", bl) for bl in boxscore_links]
     game_ids = [match_group.groups()[0] for match_group in game_id_matches]
 
     game_link_records = [GameLinkRecord(date_string, game_id) for game_id in game_ids]
-    return game_link_records
+
+    with sqlite3.connect(nba_database) as conn:
+        NBAData().game_links.insert(game_link_records, conn)
