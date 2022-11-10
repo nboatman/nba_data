@@ -9,8 +9,11 @@ nba_database = os.path.join(db_path, "nba_data.db")
 class NBAData:
     def __init__(self):
         self.game_links = Table(GAME_LINK_TABLE)
+        self.line_score = Table(LINE_SCORE_TABLE)
 
-        self.tables = []
+        self.tables = [
+            (self.line_score, 'line_score_tbl')
+        ]
 
     def setup(self):
         with sqlite3.connect(nba_database) as conn:
