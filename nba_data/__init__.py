@@ -10,9 +10,11 @@ class NBAData:
     def __init__(self):
         self.game_links = Table(GAME_LINK_TABLE)
         self.line_score = Table(LINE_SCORE_TABLE)
+        self.four_factors = Table(FOUR_FACTORS_TABLE)
 
         self.tables = [
-            (self.line_score, 'line_score_tbl')
+            (self.line_score, 'line_score_tbl'),
+            (self.four_factors, 'four_factors_tbl')
         ]
 
     def setup(self):

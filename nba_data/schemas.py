@@ -21,3 +21,17 @@ LINE_SCORE_TABLE = {
         'by_team': ['team', 'date', 'period'],
     }
 }
+
+FOUR_FACTORS_TABLE = {
+    'name': 'four_factors',
+    'columns': {
+        'game_id': 'text', 'date': 'text',
+        'team': 'text', 'key': 'text',
+        'value': 'real'
+    },
+    'pk': ['game_id', 'team', 'key'],
+    'nonnull': ['game_id', 'team', 'key'],
+    'indices': {
+        'by_team': ['team', 'date', 'key']
+    }
+}
