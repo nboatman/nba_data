@@ -1,0 +1,11 @@
+# Ignore JetBrains files
+.\idea
+
+# Ignore pycache files
+**\__pycache__*
+
+# Ignore database
+*.db
+
+# Ignore Jupyter checkpoints
+*checkpoint.ipynb
