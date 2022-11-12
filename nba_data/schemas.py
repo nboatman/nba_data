@@ -12,7 +12,7 @@ LINE_SCORE_TABLE = {
     'name': 'line_score',
     'columns': {
         'game_id': 'text', 'date': 'text',
-        'team': 'text', 'period': 'text',
+        'team': 'text', 'period': 'integer',
         'points': 'integer'
     },
     'pk': ['game_id', 'team', 'period'],
