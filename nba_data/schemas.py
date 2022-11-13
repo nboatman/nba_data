@@ -35,3 +35,24 @@ FOUR_FACTORS_TABLE = {
         'by_team': ['team', 'date', 'key']
     }
 }
+
+PLAYER_BASIC_BOXSCORE_TABLE = {
+    'name': 'basic_boxscore_player',
+    'columns': {
+        'game_id': 'text', 'date': 'text',
+        'player_id': 'text', 'player_name': 'text',
+        'team': 'text', 'mp': 'real',
+        'fg': 'integer', 'fga': 'integer', 'fg_pct': 'real',
+        'fg3': 'integer', 'fg3a': 'integer', 'fg3_pct': 'real',
+        'ft': 'integer', 'fta': 'integer', 'ft_pct': 'real',
+        'orb': 'integer', 'drb': 'integer', 'trb': 'integer',
+        'ast': 'integer', 'stl': 'integer', 'blk': 'integer',
+        'tov': 'integer', 'pf': 'integer', 'pts': 'integer',
+        'plus_minus': 'integer', 'is_starter': 'integer'
+    },
+    'pk': ['game_id', 'team', 'player_id'],
+    'nonnull': ['game_id', 'team', 'player_id'],
+    'indices': {
+        'by_player': ['player_id', 'date']
+    }
+}
