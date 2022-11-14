@@ -1,3 +1,5 @@
+from copy import deepcopy
+
 GAME_LINK_TABLE = {
     'name': 'game_links',
     'columns': {
@@ -36,11 +38,11 @@ FOUR_FACTORS_TABLE = {
     }
 }
 
-PLAYER_BASIC_BOXSCORE_TABLE = {
+BASIC_BOXSCORE_TABLE_PLAYER = {
     'name': 'basic_boxscore_player',
     'columns': {
-        'game_id': 'text', 'date': 'text',
-        'player_id': 'text', 'player_name': 'text',
+        'game_id': 'text', 'date': 'text', 'period': 'text',
+        'id': 'text', 'name': 'text',
         'team': 'text', 'mp': 'real',
         'fg': 'integer', 'fga': 'integer', 'fg_pct': 'real',
         'fg3': 'integer', 'fg3a': 'integer', 'fg3_pct': 'real',
@@ -50,9 +52,13 @@ PLAYER_BASIC_BOXSCORE_TABLE = {
         'tov': 'integer', 'pf': 'integer', 'pts': 'integer',
         'plus_minus': 'integer', 'is_starter': 'integer'
     },
-    'pk': ['game_id', 'team', 'player_id'],
-    'nonnull': ['game_id', 'team', 'player_id'],
+    'pk': ['game_id', 'team', 'period', 'id'],
+    'nonnull': ['game_id', 'team', 'period', 'id'],
     'indices': {
-        'by_player': ['player_id', 'date']
+        'by_player': ['id', 'date', 'period']
     }
 }
+
+BASIC_BOXSCORE_TABLE_TEAM = deepcopy(BASIC_BOXSCORE_TABLE_PLAYER)
+BASIC_BOXSCORE_TABLE_TEAM['name'] = 'basic_boxscore_team'
+

@@ -11,10 +11,12 @@ class NBAData:
         self.game_links = Table(GAME_LINK_TABLE)
         self.line_score = Table(LINE_SCORE_TABLE)
         self.four_factors = Table(FOUR_FACTORS_TABLE)
+        self.basic_boxscore_player = Table(BASIC_BOXSCORE_TABLE_PLAYER)
 
         self.tables = [
             (self.line_score, 'line_score_tbl'),
-            (self.four_factors, 'four_factors_tbl')
+            (self.four_factors, 'four_factors_tbl'),
+            (self.basic_boxscore_player, 'basic_boxscore_tbl_player')
         ]
 
     def setup(self):
