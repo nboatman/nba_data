@@ -36,7 +36,7 @@ class BasicBoxScore:
         self.is_starter = is_starter
 
     def format_attr(self):
-        mp_min_and_sec = list(map(int, self.mp.split(':')))
+        mp_min_and_sec = list(map(int, self.mp.split(':'))) + [0]
         self.mp = round(mp_min_and_sec[0] + mp_min_and_sec[1] / 60, 2)
         self.fg = int(self.fg)
         self.fga = int(self.fga)
@@ -56,10 +56,10 @@ class BasicBoxScore:
         self.tov = int(self.tov)
         self.pf = int(self.pf)
         self.pts = int(self.pts)
-        self.plus_minus = int(self.plus_minus)
+        self.plus_minus = int(self.plus_minus) if self.plus_minus is not None else None
 
 
-def ingest(boxscore_html, game_id, team, period):
+def ingest_for_players(boxscore_html, game_id, team, period):
     basic_box_table = boxscore_html.xpath(f'//table[@id="box-{team}-{period}-basic"]')[0]
     table_rows = basic_box_table.xpath('./tbody/tr')
     basic_box_scores = []
@@ -67,11 +67,11 @@ def ingest(boxscore_html, game_id, team, period):
     starter_rows = table_rows[:5]
     reserve_rows = table_rows[6:]
     for sr in starter_rows:
-        boxscore = parse_boxscore_row(sr, game_id, period, team, True)
+        boxscore = parse_boxscore_row_player(sr, game_id, period, team, True)
         basic_box_scores.append(boxscore)
 
     for rr in reserve_rows:
-        boxscore = parse_boxscore_row(rr, game_id, period, team, False)
+        boxscore = parse_boxscore_row_player(rr, game_id, period, team, False)
         if boxscore is not None:
             basic_box_scores.append(boxscore)
 
@@ -79,9 +79,38 @@ def ingest(boxscore_html, game_id, team, period):
         NBAData().basic_boxscore_player.insert(basic_box_scores, conn)
 
 
-def parse_boxscore_row(row_html, game_id, period, team, is_starter):
+def ingest_for_team(boxscore_html, game_id, team, period):
+    basic_box_team_table = boxscore_html.xpath(f'//table[@id="box-{team}-{period}-basic"]')[0]
+    basic_box_team_row = basic_box_team_table.xpath('.//tfoot/tr')[0]
+    basic_box_scores = [parse_boxscore_row_team(basic_box_team_row, game_id, period, team)]
+
+    with sqlite3.connect(nba_database) as conn:
+        NBAData().basic_boxscore_team.insert(basic_box_scores, conn)
+
+
+def parse_boxscore_row_team(row_html, game_id, period, team):
+
+    boxscore = BasicBoxScore(
+        game_id,
+        period,
+        team,
+        team,
+        team,
+        None
+    )
+
+    data = row_html.xpath('./td')
+
+    for d in data:
+        setattr(boxscore, d.attrib['data-stat'], d.text)
+
+    boxscore.format_attr()
+    return boxscore
+
+
+def parse_boxscore_row_player(row_html, game_id, period, team, is_starter):
     th = row_html.xpath('./th')[0]
-    id = th.attrib['data-append-csv']
+    id = th.attrib.get('data-append-csv')
     player_name = th.xpath('./a')[0].text
 
     boxscore = BasicBoxScore(
