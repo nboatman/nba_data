@@ -1,5 +1,3 @@
-from lxml.html import HtmlComment
-from lxml import html
 import sqlite3
 from nba_data import NBAData, nba_database
 
