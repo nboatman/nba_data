@@ -8,7 +8,7 @@ nba_database = os.path.join(db_path, "nba_data.db")
 
 class NBAData:
     def __init__(self):
-        self.game_links = Table(GAME_LINK_TABLE)
+        self.game_ingestion = Table(GAME_INGESTION_TABLE)
         self.line_score = Table(LINE_SCORE_TABLE)
         self.four_factors = Table(FOUR_FACTORS_TABLE)
         self.basic_boxscore_player = Table(BASIC_BOXSCORE_TABLE_PLAYER)
@@ -26,13 +26,23 @@ class NBAData:
             cur = conn.cursor()
             for tbl, _ in self.tables:
                 tbl.create(cur)
-            self.game_links.create(cur)
+            self.game_ingestion.create(cur)
 
     def clear_processed_data(self):
         with sqlite3.connect(nba_database) as conn:
             for tbl, _ in self.tables:
                 tbl.delete(conn)
-            self.game_links.update(conn.cursor(), ['successful_parsing = 0'])
+
+            self.game_ingestion.update(
+                conn.cursor(),
+                [
+                    'boxscore_parsed = 0',
+                    'play_by_play_parsed = 0',
+                    'shot_chart_parsed = 0',
+                    'plus_minus_parsed = 0',
+                    'all_parsed = 0'
+                ]
+            )
 
 
 class Table:

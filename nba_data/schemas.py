@@ -1,13 +1,21 @@
 from copy import deepcopy
 
-GAME_LINK_TABLE = {
-    'name': 'game_links',
+GAME_INGESTION_TABLE = {
+    'name': 'game_ingestion',
     'columns': {
         'game_id': 'text', 'date': 'text',
-        'url': 'text', 'successful_parsing': 'integer'
+        'boxscore': 'text', 'boxscore_ingested': 'integer', 'boxscore_parsed': 'integer',
+        'play_by_play': 'text', 'play_by_play_ingested': 'integer', 'play_by_play_parsed': 'integer',
+        'shot_chart': 'text', 'shot_chart_ingested': 'integer', 'shot_chart_parsed': 'integer',
+        'plus_minus': 'text', 'plus_minus_ingested': 'integer', 'plus_minus_parsed': 'ingested',
+        'all_ingested': 'integer', 'all_parsed': 'integer'
     },
     'pk': ['game_id'],
-    'nonnull': ['game_id']
+    'nonnull': ['game_id'],
+    'indices': {
+        'ingestion': ['all_ingested', 'game_id'],
+        'parsing': ['all_parsed', 'game_id']
+    }
 }
 
 LINE_SCORE_TABLE = {
