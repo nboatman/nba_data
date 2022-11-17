@@ -34,8 +34,12 @@ def ingest(boxscore_html, game_id):
     table_rows = table_body.xpath('./tr')
     assert len(table_rows) == 2
 
+    teams = []
+    num_periods = 4
+
     for row in table_rows:
         team = row.xpath('./th/a')[0].text
+        teams.append(team)
         period_scores = {PERIODS[s.attrib['data-stat']]: int(s.text) for s in row.xpath('./td') if s.attrib['data-stat'] in PERIODS}
 
         for period in period_scores:
@@ -48,5 +52,9 @@ def ingest(boxscore_html, game_id):
                 )
             )
 
+            num_periods = max(num_periods, period)
+
     with sqlite3.connect(nba_database) as conn:
         NBAData().line_score.insert(line_scores, conn)
+
+    return teams, num_periods
