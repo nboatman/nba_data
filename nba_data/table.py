@@ -63,7 +63,7 @@ class Table:
     def get_values_to_insert(self, record):
         return tuple([getattr(record, column, None) for column in self.column_names])
 
-    def update(self, db_cursor, value_expressions, record_identifier_expressions=None):
+    def update(self, db_cursor, value_expressions, record_identifier_expressions=None, values=tuple()):
         if record_identifier_expressions is None:
             where_clause = ""
         else:
@@ -72,4 +72,5 @@ class Table:
         query = f"""UPDATE {self.name}
                     SET {', '.join(value_expressions)}
                     {where_clause};"""
-        db_cursor.execute(query)
+
+        db_cursor.execute(query, values)

@@ -4,6 +4,7 @@ import sqlite3
 import requests
 from lxml import html
 from nba_data import NBAData, nba_database
+from nba_data.box_scores.html import get_response
 
 BASE_URL = 'https://www.basketball-reference.com'
 
@@ -25,6 +26,9 @@ class GameIngestionRecord:
         self.shot_chart_parsed = False
         self.plus_minus_ingested = False
         self.plus_minus_parsed = False
+
+        self.all_ingested = False
+        self.all_parsed = False
 
 
 def get_schedule_response(game_date):
@@ -54,3 +58,52 @@ def ingest_schedule(game_date):
 
     with sqlite3.connect(nba_database) as conn:
         NBAData().game_ingestion.insert(game_ingestion_records, conn)
+
+
+def ingest_html_responses(game_ids=None):
+    data_handler = NBAData()
+
+    if game_ids is None:
+        sql = f"""select game_id, boxscore_ingested, play_by_play_ingested,
+                    shot_chart_ingested, plus_minus_ingested
+                  from {data_handler.game_ingestion.name}
+                  where all_ingested = 0"""
+
+        with sqlite3.connect(nba_database) as conn:
+            cur = conn.cursor()
+            cur.execute(sql)
+            ingestion_records = cur.fetchall()
+    else:
+        ingestion_records = [(game_id, 0, 0, 0, 0) for game_id in game_ids]
+
+    responses = [get_responses_for_data(ingestion_record) for ingestion_record in ingestion_records]
+
+    for response in responses:
+        (game_id, box_response, pbp_response, shot_chart_response, pm_response) = response
+
+        with sqlite3.connect(nba_database) as conn:
+            cur = conn.cursor()
+
+            for (col, resp) in zip(('boxscore', 'play_by_play', 'shot_chart', 'plus_minus'), response[1:]):
+                if resp is None:
+                    continue
+                NBAData().game_ingestion.update(
+                    cur,
+                    [f"{col} = ?", f"{col}_ingested = ?"],
+                    record_identifier_expressions = [f"game_id = '{game_id}'"],
+                    values=(resp.content, 1)
+                )
+
+
+def get_responses_for_data(record_tuple):
+    (game_id, boxscore_ingested, play_by_play_ingested,
+     shot_chart_ingested, plus_minus_ingested) = record_tuple
+
+    responses = [game_id]
+
+    responses.append(None if boxscore_ingested else get_response(f'/boxscores/{game_id}.html'))
+    responses.append(None if play_by_play_ingested else get_response(f'/boxscores/pbp/{game_id}.html'))
+    responses.append(None if shot_chart_ingested else get_response(f'/boxscores/shot-chart/{game_id}.html'))
+    responses.append(None if plus_minus_ingested else get_response(f'/boxscores/plus-minus/{game_id}.html'))
+
+    return responses

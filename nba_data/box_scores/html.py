@@ -8,3 +8,8 @@ def get_boxscore_html(relative_url):
     absolute_url = f"{BASE_URL}{relative_url}"
     response =  requests.get(url=absolute_url, allow_redirects=False)
     return html.fromstring(response.content)
+
+
+def get_response(relative_url):
+    absolute_url = f"{BASE_URL}{relative_url}"
+    return requests.get(url=absolute_url, allow_redirects=False)
