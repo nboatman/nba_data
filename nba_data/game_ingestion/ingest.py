@@ -90,9 +90,14 @@ def ingest_html_responses(game_ids=None):
                 NBAData().game_ingestion.update(
                     cur,
                     [f"{col} = ?", f"{col}_ingested = ?"],
-                    record_identifier_expressions = [f"game_id = '{game_id}'"],
+                    record_identifier_expressions=[f"game_id = '{game_id}'"],
                     values=(resp.content, 1)
                 )
+
+            NBAData().game_ingestion.update(
+                cur,
+                ["all_ingested = boxscore_ingested * play_by_play_ingested * shot_chart_ingested * plus_minus_ingested"]
+            )
 
 
 def get_responses_for_data(record_tuple):
