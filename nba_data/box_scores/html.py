@@ -3,6 +3,8 @@ import sqlite3
 import requests
 from lxml import html
 from nba_data import NBAData, nba_database
+import time
+import random
 
 BASE_URL = 'https://www.basketball-reference.com'
 
@@ -22,4 +24,10 @@ def get_boxscore_html_from_db(game_id):
 
 def get_response(relative_url):
     absolute_url = f"{BASE_URL}{relative_url}"
-    return requests.get(url=absolute_url, allow_redirects=False)
+    response = requests.get(url=absolute_url, allow_redirects=False)
+
+    # Sleep to avoid getting rate limited
+    time.sleep(random.randint(1, 3))
+
+    response.raise_for_status()
+    return response
