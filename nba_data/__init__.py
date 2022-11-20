@@ -14,12 +14,16 @@ class NBAData:
         self.four_factors = Table(FOUR_FACTORS_TABLE)
         self.basic_boxscore_player = Table(BASIC_BOXSCORE_TABLE_PLAYER)
         self.basic_boxscore_team = Table(BASIC_BOXSCORE_TABLE_TEAM)
+        self.advanced_boxscore_player = Table(ADVANCED_BOXSCORE_TABLE_PLAYER)
+        self.advanced_boxscore_team = Table(ADVANCED_BOXSCORE_TABLE_TEAM)
 
         self.tables = [
             (self.line_score, 'line_score_tbl'),
             (self.four_factors, 'four_factors_tbl'),
             (self.basic_boxscore_player, 'basic_boxscore_tbl_player'),
-            (self.basic_boxscore_team, 'basic_boxscore_tbl_team')
+            (self.basic_boxscore_team, 'basic_boxscore_tbl_team'),
+            (self.advanced_boxscore_player, 'advanced_boxscore_tbl_player'),
+            (self.advanced_boxscore_team, 'advanced_boxscore_tbl_team'),
         ]
 
     def setup(self):

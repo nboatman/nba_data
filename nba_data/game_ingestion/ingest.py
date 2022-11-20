@@ -1,5 +1,7 @@
+import random
 import re
 import sqlite3
+import time
 
 import requests
 from lxml import html
@@ -52,12 +54,16 @@ def get_game_ids(schedule_response, game_date):
 def ingest_schedule(game_date):
     date_string = game_date.strftime('%Y%m%d')
     schedule_response = get_schedule_response(game_date)
+    time.sleep(random.randint(1, 3))
+    schedule_response.raise_for_status()
     game_ids = get_game_ids(schedule_response, date_string)
 
     game_ingestion_records = [GameIngestionRecord(date_string, game_id) for game_id in game_ids]
 
     with sqlite3.connect(nba_database) as conn:
         NBAData().game_ingestion.insert(game_ingestion_records, conn)
+
+    return game_ids
 
 
 def ingest_html_responses(game_ids=None):
@@ -76,15 +82,15 @@ def ingest_html_responses(game_ids=None):
     else:
         ingestion_records = [(game_id, 0, 0, 0, 0) for game_id in game_ids]
 
-    responses = [get_responses_for_data(ingestion_record) for ingestion_record in ingestion_records]
-
-    for response in responses:
-        (game_id, box_response, pbp_response, shot_chart_response, pm_response) = response
+    for ingestion_record in ingestion_records:
+        responses = get_responses_for_data(ingestion_record)
+        (game_id, box_response, pbp_response, shot_chart_response, pm_response) = responses
+    # responses = [get_responses_for_data(ingestion_record) for ingestion_record in ingestion_records]
 
         with sqlite3.connect(nba_database) as conn:
             cur = conn.cursor()
 
-            for (col, resp) in zip(('boxscore', 'play_by_play', 'shot_chart', 'plus_minus'), response[1:]):
+            for (col, resp) in zip(('boxscore', 'play_by_play', 'shot_chart', 'plus_minus'), responses[1:]):
                 if resp is None:
                     continue
                 NBAData().game_ingestion.update(
@@ -98,6 +104,8 @@ def ingest_html_responses(game_ids=None):
                 cur,
                 ["all_ingested = boxscore_ingested * play_by_play_ingested * shot_chart_ingested * plus_minus_ingested"]
             )
+
+            print(f'ingestion complete for game {game_id}')
 
 
 def get_responses_for_data(record_tuple):

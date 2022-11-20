@@ -67,6 +67,27 @@ BASIC_BOXSCORE_TABLE_PLAYER = {
     }
 }
 
+ADVANCED_BOXSCORE_TABLE_PLAYER = {
+    'name': 'advanced_boxscore_player',
+    'columns': {
+        'game_id': 'text', 'date': 'text', 'period': 'text',
+        'id': 'text', 'name': 'text',
+        'team': 'text', 'mp': 'real',
+        'ts_pct': 'real', 'efg_pct': 'real',
+        'fg3a_per_fga_pct': 'real', 'fta_per_fga_pct': 'real',
+        'orb_pct': 'real', 'drb_pct': 'real', 'trb_pct': 'real',
+        'ast_pct': 'real', 'stl_pct': 'real', 'blk_pct': 'real', 'tov_pct': 'real',
+        'usg_pct': 'real', 'off_rtg': 'real', 'def_rtg': 'real', 'bpm': 'real'
+    },
+    'pk': ['game_id', 'team', 'period', 'id'],
+    'nonnull': ['game_id', 'team', 'period', 'id'],
+    'indices': {
+        'by_player': ['id', 'date', 'period']
+    }
+}
+
 BASIC_BOXSCORE_TABLE_TEAM = deepcopy(BASIC_BOXSCORE_TABLE_PLAYER)
 BASIC_BOXSCORE_TABLE_TEAM['name'] = 'basic_boxscore_team'
 
+ADVANCED_BOXSCORE_TABLE_TEAM = deepcopy(ADVANCED_BOXSCORE_TABLE_PLAYER)
+ADVANCED_BOXSCORE_TABLE_TEAM['name'] = 'advanced_boxscore_team'
