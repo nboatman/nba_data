@@ -14,7 +14,8 @@ GAME_INGESTION_TABLE = {
     'nonnull': ['game_id'],
     'indices': {
         'ingestion': ['all_ingested', 'game_id'],
-        'parsing': ['all_parsed', 'game_id']
+        'parsing': ['all_parsed', 'game_id'],
+        'boxscore_parsing': ['boxscore_parsed', 'game_id']
     }
 }
 
@@ -35,14 +36,15 @@ LINE_SCORE_TABLE = {
 FOUR_FACTORS_TABLE = {
     'name': 'four_factors',
     'columns': {
-        'game_id': 'text', 'date': 'text',
-        'team': 'text', 'key': 'text',
-        'value': 'real'
+        'game_id': 'text', 'date': 'text', 'team': 'text',
+        'pace': 'real', 'efg_pct': 'real',
+        'tov_pct': 'real', 'orb_pct': 'real',
+        'ft_rate': 'real', 'off_rtg': 'real'
     },
-    'pk': ['game_id', 'team', 'key'],
-    'nonnull': ['game_id', 'team', 'key'],
+    'pk': ['game_id', 'team'],
+    'nonnull': ['game_id', 'team'],
     'indices': {
-        'by_team': ['team', 'date', 'key']
+        'by_team': ['team', 'date']
     }
 }
 
@@ -91,3 +93,61 @@ BASIC_BOXSCORE_TABLE_TEAM['name'] = 'basic_boxscore_team'
 
 ADVANCED_BOXSCORE_TABLE_TEAM = deepcopy(ADVANCED_BOXSCORE_TABLE_PLAYER)
 ADVANCED_BOXSCORE_TABLE_TEAM['name'] = 'advanced_boxscore_team'
+
+MODELS_TABLE = {
+    'name': 'models',
+    'columns': {
+        'model_id': 'text', 'model_name': 'text', 'target_variable': 'text'
+    },
+    'pk': ['model_id'],
+    'nonnull': ['model_id', 'model_name', 'target_variable'],
+    'indices': {
+        'name': ['model_name'],
+        'target': ['target_variable']
+    }
+}
+
+MODEL_DATA_CATALOG_TABLE = {
+    'name': 'model_data_catalog',
+    'columns': {
+        'model_id': 'text', 'table_name_relative': 'text',
+        'table_name_full': 'text'
+    },
+    'pk': ['model_id', 'table_name_relative'],
+    'nonnull': ['model_id', 'table_name_relative', 'table_name_full']
+}
+
+FANDUEL_PLAYER_LIST_TABLE = {
+    'name': 'fanduel_player_list',
+    'columns': {
+        'id': 'text', 'date': 'text',
+        'game_id': 'text', 'player_id': 'text',
+        'position': 'text', 'first_name': 'text', 'last_name': 'text',
+        'nickname': 'text', 'fppg': 'real', 'played': 'integer',
+        'salary': 'integer', 'game': 'text',
+        'team': 'text', 'opponent': 'text',
+        'injury_indicator': 'text', 'injury_details': 'text',
+        'tier': 'text', 'roster_position': 'text'
+    },
+    'pk': ['id'],
+    'nonnull': ['id'],
+    'indices': {
+        'by_game': ['game_id'],
+        'by_date': ['date']
+    }
+}
+
+PLAYERS_TABLE = {
+    'name': 'players',
+    'columns': {
+        'br_id': 'text', 'br_name': 'text',
+        'fd_id': 'text', 'fd_name': 'text',
+        'date_of_birth': 'text',
+        'height_inches': 'integer', 'weight_lbs': 'integer'
+    },
+    'pk': ['br_id'],
+    'nonnull': ['br_id'],
+    'indices': {
+        'fd_id': ['fd_id']
+    }
+}

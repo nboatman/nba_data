@@ -16,6 +16,8 @@ class NBAData:
         self.basic_boxscore_team = Table(BASIC_BOXSCORE_TABLE_TEAM)
         self.advanced_boxscore_player = Table(ADVANCED_BOXSCORE_TABLE_PLAYER)
         self.advanced_boxscore_team = Table(ADVANCED_BOXSCORE_TABLE_TEAM)
+        self.fanduel_player_list = Table(FANDUEL_PLAYER_LIST_TABLE)
+        self.players = Table(PLAYERS_TABLE)
 
         self.tables = [
             (self.line_score, 'line_score_tbl'),
@@ -32,6 +34,8 @@ class NBAData:
             for tbl, _ in self.tables:
                 tbl.create(cur)
             self.game_ingestion.create(cur)
+            self.fanduel_player_list.create(cur)
+            self.players.create(cur)
 
     def clear_processed_data(self):
         with sqlite3.connect(nba_database) as conn:

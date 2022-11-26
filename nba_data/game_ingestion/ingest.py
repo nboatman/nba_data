@@ -73,7 +73,7 @@ def ingest_html_responses(game_ids=None):
         sql = f"""select game_id, boxscore_ingested, play_by_play_ingested,
                     shot_chart_ingested, plus_minus_ingested
                   from {data_handler.game_ingestion.name}
-                  where all_ingested = 0"""
+                  where all_ingested = 0;"""
 
         with sqlite3.connect(nba_database) as conn:
             cur = conn.cursor()

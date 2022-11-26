@@ -1,5 +1,6 @@
 import sqlite3
 from nba_data import NBAData, nba_database
+from typing import Optional
 
 class AdvancedBoxScore:
     def __init__(self, game_id, period, team, id, name, is_starter):
@@ -30,21 +31,21 @@ class AdvancedBoxScore:
     def format_attr(self):
         mp_min_and_sec = list(map(int, self.mp.split(':'))) + [0]
         self.mp = round(mp_min_and_sec[0] + mp_min_and_sec[1] / 60, 2)
-        self.ts_pct = float(self.ts_pct)
-        self.efg_pct = float(self.efg_pct)
-        self.fg3a_per_fga_pct = float(self.fg3a_per_fga_pct)
-        self.fta_per_fga_pct = float(self.fta_per_fga_pct)
-        self.orb_pct = float(self.orb_pct)
-        self.drb_pct = float(self.drb_pct)
-        self.trb_pct = float(self.trb_pct)
-        self.ast_pct = float(self.ast_pct)
-        self.stl_pct = float(self.stl_pct)
-        self.blk_pct = float(self.blk_pct)
-        self.tov_pct = float(self.tov_pct)
-        self.usg_pct = float(self.usg_pct)
-        self.off_rtg = float(self.off_rtg)
-        self.def_rtg = float(self.def_rtg)
-        self.bpm = float(self.bpm)
+        self.ts_pct = float_safe(self.ts_pct)
+        self.efg_pct = float_safe(self.efg_pct)
+        self.fg3a_per_fga_pct = float_safe(self.fg3a_per_fga_pct)
+        self.fta_per_fga_pct = float_safe(self.fta_per_fga_pct)
+        self.orb_pct = float_safe(self.orb_pct)
+        self.drb_pct = float_safe(self.drb_pct)
+        self.trb_pct = float_safe(self.trb_pct)
+        self.ast_pct = float_safe(self.ast_pct)
+        self.stl_pct = float_safe(self.stl_pct)
+        self.blk_pct = float_safe(self.blk_pct)
+        self.tov_pct = float_safe(self.tov_pct)
+        self.usg_pct = float_safe(self.usg_pct)
+        self.off_rtg = float_safe(self.off_rtg)
+        self.def_rtg = float_safe(self.def_rtg)
+        self.bpm = float_safe(self.bpm)
 
 
 def ingest_for_players(boxscore_html, game_id, team):
@@ -68,7 +69,7 @@ def ingest_for_players(boxscore_html, game_id, team):
         NBAData().advanced_boxscore_player.insert(advanced_box_scores, conn)
 
 
-def ingest_for_team(boxscore_html, game_id, team, period):
+def ingest_for_team(boxscore_html, game_id, team):
     period = 'game'
     advanced_box_team_table = boxscore_html.xpath(f'//table[@id="box-{team}-{period}-advanced"]')[0]
     advanced_box_team_row = advanced_box_team_table.xpath('.//tfoot/tr')[0]
@@ -123,3 +124,8 @@ def parse_boxscore_row_player(row_html, game_id, period, team, is_starter):
     boxscore.format_attr()
 
     return boxscore
+
+
+# TODO - move to utils to reduce duplication
+def float_safe(string_rep_of_float: Optional[str]) -> Optional[float]:
+    return None if string_rep_of_float is None else float(string_rep_of_float)
