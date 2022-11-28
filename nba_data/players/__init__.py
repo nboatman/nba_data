@@ -62,6 +62,34 @@ def get_player_html(player_id):
     response.raise_for_status()
     return html.fromstring(response.content)
 
+
+def match_with_fanduel_data():
+    data_handler = NBAData()
+    players_table = f"{data_handler.players.name}"
+    fd_player_table = f"{data_handler.fanduel_player_list.name}"
+    br_name_col = f"{data_handler.players.name}.br_name"
+    fd_id_col = f"{data_handler.players.name}.fd_id"
+
+    sql = f"""update {players_table}
+              set fd_id = (select player_id
+                           from {fd_player_table}
+                           where nickname = {br_name_col}
+                          ),
+                  fd_name = (select nickname
+                             from {fd_player_table}
+                             where nickname = {br_name_col}
+                            )
+              where {fd_id_col} is NULL
+              and EXISTS (select nickname
+                          from {fd_player_table}
+                          where nickname = {br_name_col}
+                         );"""
+
+    with sqlite3.connect(nba_database) as conn:
+        cur = conn.cursor()
+        cur.execute(sql)
+
+
 def handle_height_string(h):
     ft, inches = map(int, h.split('-'))
     return 12 * ft + inches
