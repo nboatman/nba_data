@@ -4,6 +4,7 @@ import random
 import requests
 import sqlite3
 import time
+from unidecode import unidecode
 from nba_data import NBAData, nba_database
 
 BASE_URL = r"https://www.basketball-reference.com/players"
@@ -13,11 +14,28 @@ class PlayerRecord:
     def __init__(self, br_id, player_details):
         self.br_id = br_id
         self.br_name = player_details['name']
+        self.br_name_cleaned = clean_name(self.br_name)
         self.fd_id = None
         self.fd_name = None
         self.date_of_birth = player_details['birthDate'].replace('-', '')
         self.height_inches = handle_height_string(player_details["height"]["value"])
         self.weight_lbs = player_details["weight"]["value"].split(" ")[0]
+
+
+def clean_name(name):
+    return remove_suffix(remove_accents(name))
+
+
+def remove_accents(s):
+    return unidecode(s)
+
+
+def remove_suffix(s):
+    suffixes = [' Sr.', ' Jr.', ' II', ' III', ' IV']
+    for suffix in suffixes:
+        if s.endswith(suffix):
+            return s[:-len(suffix)]
+    return s
 
 
 def ingest():
@@ -67,7 +85,7 @@ def match_with_fanduel_data():
     data_handler = NBAData()
     players_table = f"{data_handler.players.name}"
     fd_player_table = f"{data_handler.fanduel_player_list.name}"
-    br_name_col = f"{data_handler.players.name}.br_name"
+    br_name_col = f"{data_handler.players.name}.br_name_cleaned"
     fd_id_col = f"{data_handler.players.name}.fd_id"
 
     sql = f"""update {players_table}

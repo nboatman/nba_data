@@ -140,7 +140,7 @@ FANDUEL_PLAYER_LIST_TABLE = {
 PLAYERS_TABLE = {
     'name': 'players',
     'columns': {
-        'br_id': 'text', 'br_name': 'text',
+        'br_id': 'text', 'br_name': 'text', 'br_name_cleaned': 'text',
         'fd_id': 'text', 'fd_name': 'text',
         'date_of_birth': 'text',
         'height_inches': 'integer', 'weight_lbs': 'integer'
