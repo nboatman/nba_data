@@ -9,3 +9,6 @@
 
 # Ignore Jupyter checkpoints
 *checkpoint.ipynb
+
+# Ignore player lists
+*players-list.csv
