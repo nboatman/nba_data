@@ -79,7 +79,8 @@ ADVANCED_BOXSCORE_TABLE_PLAYER = {
         'fg3a_per_fga_pct': 'real', 'fta_per_fga_pct': 'real',
         'orb_pct': 'real', 'drb_pct': 'real', 'trb_pct': 'real',
         'ast_pct': 'real', 'stl_pct': 'real', 'blk_pct': 'real', 'tov_pct': 'real',
-        'usg_pct': 'real', 'off_rtg': 'real', 'def_rtg': 'real', 'bpm': 'real'
+        'usg_pct': 'real', 'off_rtg': 'real', 'def_rtg': 'real', 'bpm': 'real',
+        'is_starter': 'integer'
     },
     'pk': ['game_id', 'team', 'period', 'id'],
     'nonnull': ['game_id', 'team', 'period', 'id'],

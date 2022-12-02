@@ -26,7 +26,8 @@ class AdvancedBoxScore:
         self.usg_pct = None
         self.off_rtg = None
         self.def_rtg = None
-        self.bpm = None
+        self.bpm = None,
+        self.is_starter = is_starter
 
     def format_attr(self):
         mp_min_and_sec = list(map(int, self.mp.split(':'))) + [0]
