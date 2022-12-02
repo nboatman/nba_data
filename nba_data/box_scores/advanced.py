@@ -2,12 +2,14 @@ import sqlite3
 from nba_data import NBAData, nba_database
 from typing import Optional
 
+
 class AdvancedBoxScore:
-    def __init__(self, game_id, period, team, id, name, is_starter):
+    def __init__(self, game_id, period, team, opponent, id, name, is_starter):
         self.game_id = game_id
         self.date = self.game_id[:8]
         self.period = period
         self.team = team
+        self.opponent = opponent
         self.id = id
         self.name = name
 
@@ -49,7 +51,7 @@ class AdvancedBoxScore:
         self.bpm = float_safe(self.bpm)
 
 
-def ingest_for_players(boxscore_html, game_id, team):
+def ingest_for_players(boxscore_html, game_id, team, opponent):
     period = 'game'  # Advanced boxscores only available at the game level
     basic_box_table = boxscore_html.xpath(f'//table[@id="box-{team}-{period}-advanced"]')[0]
     table_rows = basic_box_table.xpath('./tbody/tr')
@@ -58,11 +60,11 @@ def ingest_for_players(boxscore_html, game_id, team):
     starter_rows = table_rows[:5]
     reserve_rows = table_rows[6:]
     for sr in starter_rows:
-        boxscore = parse_boxscore_row_player(sr, game_id, period, team, True)
+        boxscore = parse_boxscore_row_player(sr, game_id, period, team, opponent, True)
         advanced_box_scores.append(boxscore)
 
     for rr in reserve_rows:
-        boxscore = parse_boxscore_row_player(rr, game_id, period, team, False)
+        boxscore = parse_boxscore_row_player(rr, game_id, period, team, opponent, False)
         if boxscore is not None:
             advanced_box_scores.append(boxscore)
 
@@ -70,22 +72,23 @@ def ingest_for_players(boxscore_html, game_id, team):
         NBAData().advanced_boxscore_player.insert(advanced_box_scores, conn)
 
 
-def ingest_for_team(boxscore_html, game_id, team):
+def ingest_for_team(boxscore_html, game_id, team, opponent):
     period = 'game'
     advanced_box_team_table = boxscore_html.xpath(f'//table[@id="box-{team}-{period}-advanced"]')[0]
     advanced_box_team_row = advanced_box_team_table.xpath('.//tfoot/tr')[0]
-    advanced_box_scores = [parse_boxscore_row_team(advanced_box_team_row, game_id, period, team)]
+    advanced_box_scores = [parse_boxscore_row_team(advanced_box_team_row, game_id, period, team, opponent)]
 
     with sqlite3.connect(nba_database) as conn:
         NBAData().advanced_boxscore_team.insert(advanced_box_scores, conn)
 
 
-def parse_boxscore_row_team(row_html, game_id, period, team):
+def parse_boxscore_row_team(row_html, game_id, period, team, opponent):
 
     boxscore = AdvancedBoxScore(
         game_id,
         period,
         team,
+        opponent,
         team,
         team,
         None
@@ -100,7 +103,7 @@ def parse_boxscore_row_team(row_html, game_id, period, team):
     return boxscore
 
 
-def parse_boxscore_row_player(row_html, game_id, period, team, is_starter):
+def parse_boxscore_row_player(row_html, game_id, period, team, opponent, is_starter):
     th = row_html.xpath('./th')[0]
     id = th.attrib.get('data-append-csv')
     player_name = th.xpath('./a')[0].text
@@ -109,6 +112,7 @@ def parse_boxscore_row_player(row_html, game_id, period, team, is_starter):
         game_id,
         period,
         team,
+        opponent,
         id,
         player_name,
         is_starter

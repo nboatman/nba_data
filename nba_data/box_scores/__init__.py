@@ -28,18 +28,19 @@ def parse_and_ingest(game_ids=None):
 
         box_html = get_boxscore_html_from_db(game_id)
         teams, num_periods = ls.ingest(box_html, game_id)
+        opponents = list(reversed(teams))
         ff.ingest(box_html, game_id)
 
         periods = ['game', 'h1', 'h2', 'q1', 'q2', 'q3', 'q4']
         for i in range(5, num_periods+1):
             periods.append(f'ot{i-4}')
 
-        for team in teams:
-            ab.ingest_for_players(box_html, game_id, team)
-            ab.ingest_for_team(box_html, game_id, team)
+        for team, opp in zip(teams, opponents):
+            ab.ingest_for_players(box_html, game_id, team, opp)
+            ab.ingest_for_team(box_html, game_id, team, opp)
             for period in periods:
-                bb.ingest_for_players(box_html, game_id, team, period)
-                bb.ingest_for_team(box_html, game_id, team, period)
+                bb.ingest_for_players(box_html, game_id, team, opp, period)
+                bb.ingest_for_team(box_html, game_id, team, opp, period)
 
         with sqlite3.connect(nba_database) as conn:
             cur = conn.cursor()

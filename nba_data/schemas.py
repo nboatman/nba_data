@@ -53,7 +53,7 @@ BASIC_BOXSCORE_TABLE_PLAYER = {
     'columns': {
         'game_id': 'text', 'date': 'text', 'period': 'text',
         'id': 'text', 'name': 'text',
-        'team': 'text', 'mp': 'real',
+        'team': 'text', 'opponent': 'text', 'mp': 'real',
         'fg': 'integer', 'fga': 'integer', 'fg_pct': 'real',
         'fg3': 'integer', 'fg3a': 'integer', 'fg3_pct': 'real',
         'ft': 'integer', 'fta': 'integer', 'ft_pct': 'real',
@@ -74,7 +74,7 @@ ADVANCED_BOXSCORE_TABLE_PLAYER = {
     'columns': {
         'game_id': 'text', 'date': 'text', 'period': 'text',
         'id': 'text', 'name': 'text',
-        'team': 'text', 'mp': 'real',
+        'team': 'text', 'opponent': 'text', 'mp': 'real',
         'ts_pct': 'real', 'efg_pct': 'real',
         'fg3a_per_fga_pct': 'real', 'fta_per_fga_pct': 'real',
         'orb_pct': 'real', 'drb_pct': 'real', 'trb_pct': 'real',
