@@ -3,8 +3,9 @@ import os
 from nba_data.schemas import *
 from nba_data.table import Table
 
-db_path = os.path.dirname(os.path.dirname(__file__))
-nba_database = os.path.join(db_path, "nba_data.db")
+root_dir = os.path.dirname(os.path.dirname(__file__))
+nba_database = os.path.join(root_dir, "nba_data.db")
+fanduel_data_dir = os.path.join(root_dir, "nba_data", "fanduel", "data")
 
 
 class NBAData:
@@ -52,4 +53,3 @@ class NBAData:
                     'all_parsed = 0'
                 ]
             )
-
