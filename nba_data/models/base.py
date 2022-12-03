@@ -48,26 +48,26 @@ class Model:
         with sqlite3.connect(nba_database) as conn:
             MODELS_TBL.insert([self], conn)
 
+    @classmethod
+    def read_from_db(cls, model_id):
+        sql = f"""select * from {MODELS_TBL.name}
+                  where model_id='{model_id}';"""
 
-def read_from_db(model_id):
-    sql = f"""select * from {MODELS_TBL.name}
-              where model_id='{model_id}';"""
+        with sqlite3.connect(nba_database) as conn:
+            conn.row_factory = sqlite3.Row
+            cur = conn.cursor()
+            cur.execute(sql)
+            model_record = cur.fetchone()
 
-    with sqlite3.connect(nba_database) as conn:
-        conn.row_factory = sqlite3.Row
-        cur = conn.cursor()
-        cur.execute(sql)
-        model_record = cur.fetchone()
+        # Initialized model
+        model = cls()
 
-    # Initialized model
-    model = Model()
+        for col in MODELS_TBL.columns:
+            setattr(model, col, model_record[col])
 
-    for col in MODELS_TBL.columns:
-        setattr(model, col, model_record[col])
+        model.model = pickle.loads(model.model_serialized)
 
-    model.model = pickle.loads(model.model_serialized)
-
-    return model
+        return model
 
 
 # Set up the table on import
