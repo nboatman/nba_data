@@ -16,7 +16,7 @@ def setup():
         MODELS_TBL.create(cur)
 
 
-class Model:
+class BaseModel:
     def __init__(self, model_id=None, model_name=None, random_state=None):
         self.model_id = model_id
         self.model_name = model_name
@@ -35,7 +35,7 @@ class Model:
 
         x_train, _, y_train, _ = train_test_split(x, y, random_state=self.random_state)
         self.model.fit(x_train, y_train)
-        self.model_serialized = pickle(self.model)
+        self.model_serialized = pickle.dumps(self.model)
 
     def score_model(self, data_df):
         x = data_df[json.loads(self.predictor_cols)]
