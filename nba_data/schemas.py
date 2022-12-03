@@ -98,13 +98,15 @@ ADVANCED_BOXSCORE_TABLE_TEAM['name'] = 'advanced_boxscore_team'
 MODELS_TABLE = {
     'name': 'models',
     'columns': {
-        'model_id': 'text', 'model_name': 'text', 'target_variable': 'text'
+        'model_id': 'text', 'model_name': 'text',
+        'model_serialized': 'blob',
+        'predictor_cols': 'text', 'target_cols': 'text',
+        'random_state': 'integer', 'model_score': 'real'
     },
     'pk': ['model_id'],
-    'nonnull': ['model_id', 'model_name', 'target_variable'],
+    'nonnull': ['model_id', 'model_name', 'model_serialized'],
     'indices': {
-        'name': ['model_name'],
-        'target': ['target_variable']
+        'name': ['model_name']
     }
 }
 
