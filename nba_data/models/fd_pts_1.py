@@ -8,7 +8,7 @@ import sqlite3
 MODEL_ID = 'fd_pts_1'
 MODEL_NAME = 'Simple prediction of Fanduel Points'
 DATA_HANDLER = NBAData()
-LOOK_BACK_GAMES = 25
+LOOK_BACK_GAMES = 15
 
 # Move all the Fanduel scoring stuff somewhere else (utils?)
 fd_scoring = {'pts': 1, 'ast': 1.5, 'blk': 3, 'trb': 1.2, 'stl': 3, 'tov': -1}
@@ -25,11 +25,11 @@ class Model(BaseModel):
     def __init__(self):
         super().__init__(MODEL_ID, MODEL_NAME)
         self.model = LinearRegression()
-        self.predictor_cols = json.dumps(['fd_pts_recent'])
+        self.predictor_cols = json.dumps(['fd_pts_recent', 'fd_pts_recent_opponent'])
         self.target_cols = json.dumps(['fd_pts'])
 
     def get_historical_data(self):
-        sql = f"""select game_id, id, pts, ast, blk, trb, stl, tov
+        sql = f"""select game_id, id, opponent, pts, ast, blk, trb, stl, tov
                   from {DATA_HANDLER.basic_boxscore_team.name}
                   where period ='game'
                   order by game_id;"""
@@ -39,11 +39,23 @@ class Model(BaseModel):
 
         compute_fd_pts(bb_team)
 
-        bb_team_tmp = bb_team\
+        bb_team_tmp = bb_team[['id'] + json.loads(self.target_cols)]\
             .groupby('id')\
             .rolling(LOOK_BACK_GAMES, closed='left')\
             .mean()
 
+        bb_opp_tmp = bb_team[['opponent'] + json.loads(self.target_cols)]\
+            .groupby('opponent')\
+            .rolling(LOOK_BACK_GAMES, closed='left')\
+            .mean()
+
+        bb_team.reset_index(inplace=True)
+        bb_team_tmp.reset_index(inplace=True)
+        bb_opp_tmp.reset_index(inplace=True)
+
         bb_team = bb_team.merge(bb_team_tmp, on=['id', 'game_id'], suffixes=('', '_recent'))
+        bb_team = bb_team.merge(bb_opp_tmp, on=['opponent', 'game_id'], suffixes=('', '_recent_opponent'))
+
         bb_team_filtered = bb_team[json.loads(self.predictor_cols) + json.loads(self.target_cols)].dropna()
+
         return bb_team_filtered
