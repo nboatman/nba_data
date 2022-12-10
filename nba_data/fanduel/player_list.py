@@ -20,7 +20,7 @@ class FanduelPlayerRecord:
         self.game = fanduel_player['Game']
         self.team = fanduel_player['Team']
         self.opponent = fanduel_player['Opponent']
-        self.injury_indicatory = fanduel_player['Injury Indicator'] if type(fanduel_player['Injury Indicator']) == str else None
+        self.injury_indicator = fanduel_player['Injury Indicator'] if type(fanduel_player['Injury Indicator']) == str else None
         self.injury_details = fanduel_player['Injury Details'] if type(fanduel_player['Injury Details']) == str else None
         self.tier = None if pd.isna(fanduel_player['Tier']) else fanduel_player['Tier']
         self.roster_position = fanduel_player['Roster Position']

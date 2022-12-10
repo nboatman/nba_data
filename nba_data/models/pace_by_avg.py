@@ -20,7 +20,7 @@ class Model(BaseModel):
 
     def get_historical_data(self):
         sql = f"""select game_id, team, pace
-                  from four_factors
+                  from {DATA_HANDLER.four_factors.name}
                   order by game_id;"""
 
         with sqlite3.connect(nba_database) as conn:
